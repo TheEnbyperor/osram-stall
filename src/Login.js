@@ -63,8 +63,8 @@ export default class Login extends Component {
         } else {
             main = (
                 <div className="Login-box">
-                    <Textfield label="Email" error={this.state.emailError} floatingLabel ref="email"/>
-                    <Textfield label="Password" error={this.state.passwordError} floatingLabel inputClassName="password" ref="password"/>
+                    <Textfield label="Email" error={this.state.emailError} floatingLabel ref="email"/><br/>
+                    <Textfield label="Password" error={this.state.passwordError} floatingLabel inputClassName="password" ref="password"/><br/>
                     <Button raised ripple colored onClick={this.login.bind(this)}>Login</Button>
                 </div>
             );
