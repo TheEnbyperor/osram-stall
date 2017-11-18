@@ -1,0 +1,19 @@
+{
+  "name": "osram-stall",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "dialog-polyfill": "^0.4.9",
+    "firebase": "^4.6.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-mdl": "^1.10.3",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "HTTPS=true BROWSER=none PORT=3001 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
