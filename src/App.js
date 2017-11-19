@@ -108,7 +108,7 @@ class App extends Component {
             if (this.state.activeTab === 'orders') {
                 tab = <Orders stallId={this.state.stallId}/>;
             } else if (this.state.activeTab === 'menu') {
-                tab = <Menu/>;
+                tab = <Menu stallId={this.state.stallId}/>;
             }
             main = (
                 <Layout fixedHeader fixedTabs>
