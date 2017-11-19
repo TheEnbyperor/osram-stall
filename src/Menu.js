@@ -72,7 +72,7 @@ export default class Menu extends Component {
     }
 
     editItem(id) {
-        database.ref('menu/' + this.props.stallId+'/'+id).once('value')
+        database.ref('menu/' + this.props.stallId + '/' + id).once('value')
             .then(data => {
                 const item = data.val();
                 this.setState({
@@ -84,6 +84,14 @@ export default class Menu extends Component {
                     editingId: id
                 });
             });
+    }
+
+    markItemUnavailable(id) {
+        database.ref('menu/' + this.props.stallId + '/' + id + '/unavailable').set(true);
+    }
+
+    markItemAvailable(id) {
+        database.ref('menu/' + this.props.stallId + '/' + id + '/unavailable').set(false);
     }
 
     handleSaveDialog() {
@@ -148,7 +156,7 @@ export default class Menu extends Component {
                                 <div>
                                     <IconButton name="edit" colored ripple onClick={this.editItem.bind(this, id)}/>
                                     <IconButton name="remove" colored ripple onClick={this.removeItem.bind(this, id)} />
-                                    <Button ripple primary>Mark unavailable</Button>
+                                    <Button ripple primary onClick={this.markItemUnavailable.bind(this, id)}>Mark unavailable</Button>
                                 </div>}>Actions</TableHeader>
                         </DataTable>
                         <div style={{ textAlign: "center", marginTop: "10px" }}>        
@@ -166,7 +174,7 @@ export default class Menu extends Component {
                     <TableHeader name="item">Item</TableHeader>
                     <TableHeader numeric name="id" cellFormatter={id => 
                                 <div>
-                                    <Button ripple primary>Mark available</Button>
+                                    <Button ripple primary onClick={this.markItemAvailable.bind(this, id)}>Mark available</Button>
                                 </div>}>Actions</TableHeader>
                         </DataTable>
                     </CardText>
