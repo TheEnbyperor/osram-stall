@@ -9,6 +9,7 @@ import './Menu.css';
 export default class Menu extends Component {
     state = {
         menuData: [],
+        menuUnavailableData: [],
         editingId: null,
         removingId: null,
         openEditDialog: false,
@@ -24,16 +25,25 @@ export default class Menu extends Component {
     getMenu(stallId) {
         database.ref('menu/' + stallId).on('value', data => {
                 let menu = [];
+                let menuUnavailable = [];
                 data.forEach(item => {
                     const itemData = item.val();
-                    menu.push({
-                               item: itemData.name,
-                               price: itemData.price,
-                               id: item.key
-                            });
+                    if (itemData.unavailable === true) {
+                        menuUnavailable.push({
+                            item: itemData.name,
+                            id: item.key
+                        });
+                    } else {
+                        menu.push({
+                            item: itemData.name,
+                            price: itemData.price,
+                            id: item.key
+                        });
+                    }
                     this.setState({
-                        menuData: menu
-                    })
+                        menuData: menu,
+                        menuUnavailableData: menuUnavailable
+                    });
                 });
             });
     }
@@ -124,7 +134,6 @@ export default class Menu extends Component {
     render() {
         return (
             <div className="Menu">
-                <h2>Menu</h2>
                 <Card shadow={0} style={{ width: "100%" }}>
                 <CardTitle>Menu</CardTitle>
                     <CardText style={{ width: "100%" }}>    
@@ -139,9 +148,30 @@ export default class Menu extends Component {
                                 <div>
                                     <IconButton name="edit" colored ripple onClick={this.editItem.bind(this, id)}/>
                                     <IconButton name="remove" colored ripple onClick={this.removeItem.bind(this, id)} />
+                                    <Button ripple primary>Mark unavailable</Button>
                                 </div>}>Actions</TableHeader>
-                </DataTable>
-                <Dialog open={this.state.openDialog} ref="dialog">
+                        </DataTable>
+                        <div style={{ textAlign: "center", marginTop: "10px" }}>        
+                            <Button raised ripple colored onClick={this.handleAddItem.bind(this)}>Add item</Button>
+                        </div>    
+                    </CardText>
+                </Card>  
+                <Card shadow={0} style={{ width: "100%", marginTop: "10px"}}>
+                <CardTitle>Unavailable items</CardTitle>
+                    <CardText style={{ width: "100%" }}>    
+                <DataTable
+                    rows={this.state.menuUnavailableData}
+                    style={{width: '100%', color: '#000'}}
+                >
+                    <TableHeader name="item">Item</TableHeader>
+                    <TableHeader numeric name="id" cellFormatter={id => 
+                                <div>
+                                    <Button ripple primary>Mark available</Button>
+                                </div>}>Actions</TableHeader>
+                        </DataTable>
+                    </CardText>
+                </Card>  
+                <Dialog open={this.state.openEditDialog} ref="editDialog">
                     <DialogTitle>{this.state.dialogTitle}</DialogTitle>
                     <DialogContent>
                         <Textfield label="Item name" error={this.state.itemNameError} ref="itemName"
