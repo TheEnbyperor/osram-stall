@@ -7,20 +7,23 @@ import {database} from "./App";
 import './Menu.css';
 
 export default class Menu extends Component {
-    state = {
-        menuData: [],
-        menuUnavailableData: [],
-        editingId: null,
-        removingId: null,
-        openEditDialog: false,
-        openRemoveDialog: false,
-        dialogTitle: '',
-        dialogState: null,
-        itemName: '',
-        itemPrice: '',
-        itemNameError: null,
-        itemPriceError: null,
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            menuData: [],
+            menuUnavailableData: [],
+            editingId: null,
+            removingId: null,
+            openEditDialog: false,
+            openRemoveDialog: false,
+            dialogTitle: '',
+            dialogState: null,
+            itemName: '',
+            itemPrice: '',
+            itemNameError: null,
+            itemPriceError: null,
+        };
+    }    
 
     getMenu(stallId) {
         database.ref('menu/' + stallId).on('value', data => {
@@ -28,17 +31,19 @@ export default class Menu extends Component {
                 let menuUnavailable = [];
                 data.forEach(item => {
                     const itemData = item.val();
-                    if (itemData.unavailable === true) {
-                        menuUnavailable.push({
-                            item: itemData.name,
-                            id: item.key
-                        });
-                    } else {
-                        menu.push({
-                            item: itemData.name,
-                            price: itemData.price,
-                            id: item.key
-                        });
+                    if (itemData.deleted !== true) {
+                        if (itemData.unavailable === true) {
+                            menuUnavailable.push({
+                                item: itemData.name,
+                                id: item.key
+                            });
+                        } else {
+                            menu.push({
+                                item: itemData.name,
+                                price: itemData.price,
+                                id: item.key
+                            });
+                        }
                     }
                     this.setState({
                         menuData: menu,
@@ -120,7 +125,7 @@ export default class Menu extends Component {
     }
 
     handleRemoveDialog() {
-        database.ref('menu/' + this.props.stallId + '/' + this.state.removingId).remove()
+        database.ref('menu/' + this.props.stallId + '/' + this.state.removingId + '/deleted').set(true)
             .then(() => {
                 this.setState({
                     removingId: null,
