@@ -189,7 +189,7 @@ class FinishedOrder extends Component {
     };
 
     getOrder(orderId) {
-        database.ref(`inProgressOrders/${orderId}`).on('value', data => {
+        database.ref(`finishedOrders/${orderId}`).on('value', data => {
                 let orderData = [];
                 data.child('cart').forEach(item => {
                     database.ref('menu/' + data.child('stall').val() + '/' + item.key).once('value')
