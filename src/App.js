@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import 'react-mdl/extra/material.js';
-import {Snackbar} from 'react-mdl';
+import {Snackbar, Layout, Header, HeaderRow, Tab, Content, HeaderTabs, Drawer} from 'react-mdl';
 import firebase from 'firebase';
 import 'react-mdl/extra/material.css';
 import './Login';
@@ -41,7 +41,7 @@ class App extends Component {
                 });
                 database.ref('stalls').orderByChild('owner').equalTo(user.uid).on('child_added', (data) => {
                     this.setState({
-                       stallId: data.key
+                        stallId: data.key
                     });
                 });
             } else {
@@ -66,8 +66,8 @@ class App extends Component {
                             console.log('An error occurred while retrieving token. ', err);
                         });
                 }).catch(err => {
-                    console.log('Unable to get permission to notify.', err);
-                });
+                console.log('Unable to get permission to notify.', err);
+            });
         });
         // messaging.onMessage(payload => {
         //     console.log("Message received. ", payload);
@@ -90,7 +90,21 @@ class App extends Component {
     render() {
         let main = null;
         if (this.state.signedIn) {
-            main = <Orders stallId={this.state.stallId}/>;
+            main = (
+                <Layout fixedHeader fixedTabs>
+                    <Header waterfall hideSpacer hideTop>
+                        <HeaderTabs ripple activeTab={0} onChange={(tabId) => {
+                        }}>
+                            <Tab>Orders</Tab>
+                            <Tab>Edit Menu</Tab>
+                        </HeaderTabs>
+                    </Header>
+                    <Content>
+                        <div className="page-content">
+                            <Orders stallId={this.state.stallId}/>
+                        </div>
+                    </Content>
+                </Layout>);
         } else {
             main = <Login/>;
         }
