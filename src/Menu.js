@@ -45,10 +45,10 @@ export default class Menu extends Component {
                             });
                         }
                     }
-                    this.setState({
-                        menuData: menu,
-                        menuUnavailableData: menuUnavailable
-                    });
+                });
+                this.setState({
+                    menuData: menu,
+                    menuUnavailableData: menuUnavailable
                 });
             });
     }
