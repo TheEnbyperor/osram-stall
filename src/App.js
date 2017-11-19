@@ -119,7 +119,7 @@ class App extends Component {
                         </HeaderTabs>
                     </Header>
                     <Content>
-                        <div className="page-content">
+                        <div className="TabContent">
                             {tab}
                         </div>
                     </Content>
