@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import 'react-mdl/extra/material.js';
-import {Snackbar, Layout, Header, HeaderRow, Tab, Content, HeaderTabs, Drawer} from 'react-mdl';
+import {Snackbar, Layout, Header, Tab, Content, HeaderTabs} from 'react-mdl';
 import firebase from 'firebase';
 import 'react-mdl/extra/material.css';
 import './Login';
 import './App.css';
 import Login from "./Login";
 import Orders from "./Orders";
+import Menu from "./Menu";
 
 // Initialize Firebase
 const config = {
@@ -29,6 +30,7 @@ class App extends Component {
         isSnackbarActive: false,
         signedIn: false,
         stallId: 0,
+        activeTab: 'orders',
     };
 
     componentDidMount() {
@@ -87,21 +89,38 @@ class App extends Component {
         });
     }
 
+    handleTabChange(tab) {
+        if (tab === 0) {
+            this.setState({
+                activeTab: 'orders'
+            });
+        } else if (tab === 1) {
+            this.setState({
+               activeTab: 'menu'
+            });
+        }
+    }
+
     render() {
         let main = null;
         if (this.state.signedIn) {
+            let tab;
+            if (this.state.activeTab === 'orders') {
+                tab = <Orders stallId={this.state.stallId}/>;
+            } else if (this.state.activeTab === 'menu') {
+                tab = <Menu/>;
+            }
             main = (
                 <Layout fixedHeader fixedTabs>
                     <Header waterfall hideSpacer hideTop>
-                        <HeaderTabs ripple activeTab={0} onChange={(tabId) => {
-                        }}>
+                        <HeaderTabs ripple activeTab={0} onChange={this.handleTabChange.bind(this)}>
                             <Tab>Orders</Tab>
                             <Tab>Edit Menu</Tab>
                         </HeaderTabs>
                     </Header>
                     <Content>
                         <div className="page-content">
-                            <Orders stallId={this.state.stallId}/>
+                            {tab}
                         </div>
                     </Content>
                 </Layout>);
