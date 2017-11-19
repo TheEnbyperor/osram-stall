@@ -1,7 +1,8 @@
-import React, {Component} from 'react';
+/* jshint esversion: 6 */
+import React, { Component } from 'react';
 import dialogPolyfill from 'dialog-polyfill';
 import { findDOMNode } from 'react-dom';
-import {DataTable, TableHeader, IconButton, Dialog, DialogTitle, DialogContent, DialogActions,Button,Textfield} from 'react-mdl';
+import { DataTable, TableHeader, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Textfield, Card, CardTitle, CardText } from 'react-mdl';
 import {database} from "./App";
 import './Menu.css';
 
@@ -9,7 +10,9 @@ export default class Menu extends Component {
     state = {
         menuData: [],
         editingId: null,
-        openDialog: false,
+        removingId: null,
+        openEditDialog: false,
+        openRemoveDialog: false,
         dialogTitle: '',
         dialogState: null,
         itemName: '',
@@ -36,21 +39,26 @@ export default class Menu extends Component {
     }
 
     componentWillMount() {
-        this.getMenu(this.props.stallId)
+        this.getMenu(this.props.stallId);
     }
 
     componentDidMount() {
-        dialogPolyfill.registerDialog(findDOMNode(this.refs.dialog));
+        dialogPolyfill.registerDialog(findDOMNode(this.refs.editDialog));
+        dialogPolyfill.registerDialog(findDOMNode(this.refs.removeDialog));
     }
 
     handleCloseDialog() {
         this.setState({
-            openDialog: false
+            openEditDialog: false,
+            openRemoveDialog: false,
         });
     }
 
     removeItem(id) {
-
+        this.setState({
+            openRemoveDialog: true,
+            removingId: id,
+        });
     }
 
     editItem(id) {
@@ -58,7 +66,7 @@ export default class Menu extends Component {
             .then(data => {
                 const item = data.val();
                 this.setState({
-                    openDialog: true,
+                    openEditDialog: true,
                     dialogTitle: 'Edit ' +  item.name,
                     itemName: item.name,
                     itemPrice: (item.price/100).toFixed(2),
@@ -75,18 +83,51 @@ export default class Menu extends Component {
                 price: parseFloat(this.refs.itemPrice.inputRef.value).toFixed(2)*100
             }).then(() => {
                 this.setState({
-                    openDialog: false,
+                    openEditDialog: false,
                     editingId: null,
                     dialogState: null
-                })
+                });
+            });
+        } else if (this.state.dialogState === 'add') {
+            database.ref('menu/' + this.props.stallId).push({
+                name: this.refs.itemName.inputRef.value,
+                price: parseFloat(this.refs.itemPrice.inputRef.value).toFixed(2)*100
+            }).then(() => {
+                this.setState({
+                    openEditDialog: false,
+                    dialogState: null
+                });
             });
         }
+    }
+
+    handleRemoveDialog() {
+        database.ref('menu/' + this.props.stallId + '/' + this.state.removingId).remove()
+            .then(() => {
+                this.setState({
+                    removingId: null,
+                    openRemoveDialog: false,
+                });
+            })
+    }
+
+    handleAddItem() {
+        this.setState({
+            openEditDialog: true,
+            dialogTitle: 'Add item',
+            itemName: '',
+            itemPrice: '0.00',
+            dialogState: 'add'
+        });
     }
 
     render() {
         return (
             <div className="Menu">
                 <h2>Menu</h2>
+                <Card shadow={0} style={{ width: "100%" }}>
+                <CardTitle>Menu</CardTitle>
+                    <CardText style={{ width: "100%" }}>    
                 <DataTable
                     rows={this.state.menuData}
                     style={{width: '100%', color: '#000'}}
@@ -94,10 +135,10 @@ export default class Menu extends Component {
                     <TableHeader name="item">Item</TableHeader>
                     <TableHeader numeric name="price" cellFormatter={price => `${(price / 100).toFixed(2)}`}>
                         Price</TableHeader>
-                    <TableHeader name="id" cellFormatter={id => 
+                    <TableHeader numeric name="id" cellFormatter={id => 
                                 <div>
-                                    <IconButton name="edit" colored ripple onClick={this.editItem.bind(this, id)}><i className="material-icon">edit</i></IconButton>
-                                    <IconButton name="remove" colored ripple onClick={this.removeItem.bind(this, id)}><i className="material-icon">remove</i></IconButton>
+                                    <IconButton name="edit" colored ripple onClick={this.editItem.bind(this, id)}/>
+                                    <IconButton name="remove" colored ripple onClick={this.removeItem.bind(this, id)} />
                                 </div>}>Actions</TableHeader>
                 </DataTable>
                 <Dialog open={this.state.openDialog} ref="dialog">
@@ -110,6 +151,16 @@ export default class Menu extends Component {
                     </DialogContent>
                     <DialogActions>
                         <Button type='button' onClick={this.handleSaveDialog.bind(this)}>Save</Button>
+                        <Button type='button' onClick={this.handleCloseDialog.bind(this)}>Cancel</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={this.state.openRemoveDialog} ref="removeDialog">
+                    <DialogTitle>Really?</DialogTitle>
+                    <DialogContent>
+                        <p>Really remove? This can't be undone!</p>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button type='button' onClick={this.handleRemoveDialog.bind(this)}>Remove</Button>
                         <Button type='button' onClick={this.handleCloseDialog.bind(this)}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
