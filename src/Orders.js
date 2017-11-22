@@ -23,10 +23,10 @@ class PendingOrder extends Component {
                                item: itemData.child('name').val(),
                                quantity: item.val()
                             });
+                            this.setState({
+                                orderData: orderData
+                            });
                         });
-                });
-                this.setState({
-                    orderData: orderData
                 });
             });
     }
@@ -137,10 +137,10 @@ class InProgressOrder extends Component {
                                item: itemData.child('name').val(),
                                quantity: item.val()
                             });
+                            this.setState({
+                                orderData: orderData
+                            });
                         });
-                });
-                this.setState({
-                    orderData: orderData
                 });
             });
     }
@@ -198,10 +198,10 @@ class FinishedOrder extends Component {
                                item: itemData.child('name').val(),
                                quantity: item.val()
                             });
+                            this.setState({
+                                orderData: orderData
+                            });
                         });
-                });
-                this.setState({
-                    orderData: orderData
                 });
             });
     }
